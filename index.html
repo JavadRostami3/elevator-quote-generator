@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم صدور پیش‌فاکتور آسانسور</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- پنل ورودی اطلاعات -->
+    <div class="header-panel no-print">
+        <div class="logo-section">
+            <img src="assets/logo.png" alt="لوگو" class="logo" onerror="this.style.display='none'">
+            <h1>سیستم صدور پیش‌فاکتور آسانسور</h1>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="systemType">نوع سیستم:</label>
+                <select id="systemType">
+                    <option value="gearless">گیرلس (Gearless)</option>
+                    <option value="hydraulic">هیدرولیک (Hydraulic)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="stopCount">تعداد توقف:</label>
+                <input type="number" id="stopCount" min="2" max="20" value="7">
+            </div>
+            
+            <div class="input-group">
+                <label for="customerName">نام مشتری / پروژه:</label>
+                <input type="text" id="customerName" placeholder="نام مشتری یا عنوان پروژه">
+            </div>
+            
+            <button id="generateBtn" class="btn btn-primary">
+                <span>🔧</span> ساخت فاکتور
+            </button>
+        </div>
+    </div>
+
+    <!-- بخش فاکتور -->
+    <div id="invoiceSection" class="invoice-section" style="display: none;">
+        <!-- هدر فاکتور (برای چاپ) -->
+        <div class="invoice-header">
+            <div class="header-top">
+                <div class="company-info">
+                    <img src="assets/logo.png" alt="لوگو" class="print-logo" onerror="this.style.display='none'">
+                    <div class="company-details">
+                        <h2>پیش‌فاکتور آسانسور</h2>
+                        <p>شرکت آسانسور و پله برقی</p>
+                    </div>
+                </div>
+                <div class="invoice-info">
+                    <div class="info-row">
+                        <span class="label">شماره:</span>
+                        <span id="invoiceNumber" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">تاریخ:</span>
+                        <span id="invoiceDate" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">مشتری:</span>
+                        <span id="invoiceCustomer" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">نوع سیستم:</span>
+                        <span id="invoiceSystem" class="value">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- جدول اقلام -->
+        <div class="invoice-table-container">
+            <table id="invoiceTable" class="invoice-table">
+                <thead>
+                    <tr>
+                        <th class="col-row">ردیف</th>
+                        <th class="col-name">شرح کالا</th>
+                        <th class="col-unit">واحد</th>
+                        <th class="col-qty">تعداد</th>
+                        <th class="col-price">قیمت واحد (ریال)</th>
+                        <th class="col-total">قیمت کل (ریال)</th>
+                        <th class="col-action no-print">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceBody">
+                    <!-- ردیف‌ها با JavaScript اضافه می‌شوند -->
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="5" class="total-label">جمع کل:</td>
+                        <td id="grandTotal" class="total-value">۰</td>
+                        <td class="no-print"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- دکمه افزودن سطر -->
+        <div class="add-row-section no-print">
+            <button id="addRowBtn" class="btn btn-secondary">
+                <span>➕</span> افزودن سطر جدید
+            </button>
+        </div>
+
+        <!-- فوتر فاکتور -->
+        <div class="invoice-footer">
+            <div class="total-in-words">
+                <span class="label">جمع کل به حروف:</span>
+                <span id="totalInWords" class="value">صفر ریال</span>
+            </div>
+            
+            <div class="signature-section">
+                <div class="signature-box">
+                    <p>مهر و امضای فروشنده</p>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="signature-box">
+                    <p>مهر و امضای خریدار</p>
+                    <div class="signature-line"></div>
+                </div>
+            </div>
+            
+            <div class="footer-note">
+                <p>* قیمت‌ها به ریال می‌باشد و شامل ارزش افزوده نمی‌شود.</p>
+                <p>* این پیش‌فاکتور صرفاً جهت اطلاع از قیمت‌ها بوده و فاقد اعتبار مالی است.</p>
+            </div>
+        </div>
+
+        <!-- دکمه‌های خروجی -->
+        <div class="export-section no-print">
+            <button id="printBtn" class="btn btn-success">
+                <span>🖨️</span> چاپ / PDF
+            </button>
+            <button id="excelBtn" class="btn btn-info">
+                <span>📊</span> دانلود اکسل
+            </button>
+        </div>
+    </div>
+
+    <!-- مودال افزودن سطر جدید -->
+    <div id="addRowModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>افزودن کالای جدید</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newItemName">شرح کالا:</label>
+                    <input type="text" id="newItemName" placeholder="نام کالا">
+                </div>
+                <div class="form-group">
+                    <label for="newItemUnit">واحد:</label>
+                    <input type="text" id="newItemUnit" placeholder="عدد، متر، ..." value="عدد">
+                </div>
+                <div class="form-group">
+                    <label for="newItemQty">تعداد:</label>
+                    <input type="number" id="newItemQty" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="newItemPrice">قیمت واحد (ریال):</label>
+                    <input type="number" id="newItemPrice" min="0" value="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">انصراف</button>
+                <button class="btn btn-primary" onclick="addNewRow()">افزودن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- اسکریپت‌ها -->
+    <script src="lib/xlsx.full.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
