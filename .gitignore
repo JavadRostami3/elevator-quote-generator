@@ -16,5 +16,18 @@ Thumbs.db
 *.tmp
 *.temp
 
+# Build outputs
+dist/
+.next/
+out/
+
+# Environment
+.env.local
+.env.*.local
+
+# PWA
+sw.js
+workbox-*.js
+
 # Excel source files (keep only for reference)
 # *.xlsx

@@ -1,0 +1,25 @@
+{
+  "name": "elevator-quote-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "🛗 سیستم صدور پیش‌فاکتور آسانسور - PWA",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd apps/frontend && npm run dev",
+    "dev:backend": "cd apps/backend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "cd apps/frontend && npm run build",
+    "build:backend": "cd apps/backend && npm run build",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:frontend": "cd apps/frontend && npm run start",
+    "start:backend": "cd apps/backend && npm run start",
+    "install:all": "npm install && cd apps/frontend && npm install && cd ../backend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {}
+}
