@@ -95,12 +95,12 @@ export default function SettingsPage() {
         </div>
 
         <div className="card">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">لیست اقلام</h2>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="select w-40"
+              className="select w-full sm:w-40"
             >
               <option value="all">همه</option>
               <option value="gearless">گیرلس</option>
@@ -114,7 +114,81 @@ export default function SettingsPage() {
               <span className="mr-3 text-gray-600">در حال بارگذاری...</span>
             </div>
           ) : (
-            <div className="overflow-x-auto -mx-6">
+            <>
+              <div className="md:hidden space-y-4">
+                {data?.inventoryItems.map((item) => (
+                  <div
+                    key={`mobile-${item._id}`}
+                    className={cn(
+                      'rounded-xl border border-gray-200 p-4',
+                      !item.isActive && 'opacity-50'
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">کد {item.itemId}</span>
+                      <span
+                        className={cn(
+                          'px-2 py-1 rounded-full text-xs font-medium',
+                          item.category === 'GEARLESS'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-orange-100 text-orange-700'
+                        )}
+                      >
+                        {getSystemTypeName(item.category.toLowerCase() as 'gearless' | 'hydraulic')}
+                      </span>
+                    </div>
+                    <div className="mt-2 font-semibold text-gray-900">{item.name}</div>
+                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm text-gray-600">
+                      <div>
+                        <div className="text-xs text-gray-500">واحد</div>
+                        <div className="mt-1">{item.unit}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500">نوع محاسبه</div>
+                        <div className="mt-1">{getCalcTypeName(item.calcType)}</div>
+                      </div>
+                      <div className="col-span-2">
+                        <div className="text-xs text-gray-500">قیمت</div>
+                        <div className="mt-1 ltr">
+                          {editingItem === item.itemId ? (
+                            <input
+                              type="number"
+                              value={editUnitPrice}
+                              onChange={(e) => setEditUnitPrice(Number(e.target.value))}
+                              className="w-full input py-2 text-left ltr"
+                            />
+                          ) : (
+                            <span className="font-semibold">{formatNumber(item.unitPrice)}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex items-center justify-end gap-2">
+                      {editingItem === item.itemId ? (
+                        <button
+                          onClick={() => handleSave(item.itemId)}
+                          disabled={updateMutation.isPending}
+                          className="btn-success text-sm"
+                        >
+                          {updateMutation.isPending ? (
+                            <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckIcon className="w-4 h-4" />
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="btn-secondary text-sm"
+                        >
+                          ویرایش
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="hidden md:block overflow-x-auto -mx-6">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
@@ -192,7 +266,8 @@ export default function SettingsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </>
           )}
         </div>
 

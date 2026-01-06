@@ -88,20 +88,20 @@ export function InvoiceList() {
   return (
     <>
       <div className="card">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900">لیست فاکتورها</h2>
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="select w-40"
+              className="select w-full sm:w-40"
             >
               <option value="all">همه وضعیت‌ها</option>
               <option value="draft">پیش‌نویس</option>
               <option value="finalized">نهایی شده</option>
               <option value="cancelled">لغو شده</option>
             </select>
-            <button onClick={() => refetch()} className="btn-secondary">
+            <button onClick={() => refetch()} className="btn-secondary w-full sm:w-auto">
               <ArrowPathIcon className="w-5 h-5" />
             </button>
           </div>
@@ -113,7 +113,72 @@ export function InvoiceList() {
             <p>هیچ فاکتوری یافت نشد</p>
           </div>
         ) : (
-          <div className="overflow-x-auto -mx-6">
+          <>
+            <div className="md:hidden space-y-4">
+              {invoices.map((invoice) => (
+                <div key={`mobile-${invoice._id}`} className="rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold text-primary-600 ltr">
+                      {invoice.invoiceNumber}
+                    </div>
+                    <span
+                      className={cn(
+                        'px-2 py-1 rounded-full text-xs font-medium',
+                        getStatusColor(invoice.status)
+                      )}
+                    >
+                      {getStatusName(invoice.status)}
+                    </span>
+                  </div>
+                  <div className="mt-3 text-sm text-gray-600 space-y-2">
+                    <div className="flex justify-between">
+                      <span>مشتری</span>
+                      <span className="font-medium text-gray-900">
+                        {invoice.customerName || '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>سیستم</span>
+                      <span className="font-medium text-gray-900">
+                        {getSystemTypeName(invoice.systemType)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>توقف</span>
+                      <span className="font-medium text-gray-900">{invoice.stopCount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>جمع کل</span>
+                      <span className="font-semibold text-gray-900 ltr">
+                        {formatPrice(invoice.grandTotal)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>تاریخ</span>
+                      <span className="font-medium text-gray-900">
+                        {formatPersianDate(invoice.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => setSelectedInvoice(invoice)}
+                      className="btn-secondary text-sm"
+                    >
+                      مشاهده
+                    </button>
+                    <button
+                      onClick={() => handleDelete(invoice._id)}
+                      disabled={deleteMutation.isPending}
+                      className="btn-danger text-sm"
+                    >
+                      حذف
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block overflow-x-auto -mx-6">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
@@ -176,6 +241,7 @@ export function InvoiceList() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 
